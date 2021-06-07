@@ -47,3 +47,28 @@ Integration tests are supported by [Supertest](https://github.com/visionmedia/su
 Coverage reports will be written to `./reports/`. Both traditional code-coverage and high level summary reports for the entire test suite
 are enabled. The test suite doesn't connect to the database to run these tests properly - that's a more opinionated decision than I wanted
 to bake into this boilerplate. But if you want to support it, there is a `./test/setup.ts` file included to make the connection from.
+
+## ORM and Migrations
+
+Ask five people how to access and manage a database from code and you'll get 6 answers. The one I chose here isn't the one I "recommend",
+it's just the one I get asked to use frequently in consulting projects. Feel free to rip it out, but if you keep it, you'll have a fully
+functional Sequelize, Sequelize-Typescript, and Knex (for migrations) suite ready to use.
+
+There are some yarn support scripts available to go along with this:
+
+`yarn db:migrate` - Run the migrations
+
+`yarn db:rollback` - Roll back the most recent migration
+
+`yarn db:add-migration xyz` - Create a new timestamped migration file called `xyz` in `src/knex/migrations`
+
+For what it's worth, I do prefer using ORMs in most projects. I don't buy the "you don't need an ORM" argument because I've seen so many
+security vulnerabilities and bugs introduced by developers hand-coding complex queries. But the reason I use Knex here is that in addition
+to migrations, it's also a very popular query builder so if you prefer a simpler approach, you have at least one option already.
+
+A sample seed file is also included. Bear in mind the way seeds work here, it does not detect duplicates. Seed files are meant for test and
+development purposes only. Running the seeds will clear your database! But if you want to use them, the commands are:
+
+`yarn db:add-seed xyz` - Add a seed file called `xyz` in `src/knex/seeds`.
+
+`yarn db:seed` - Run all the database seeds. Typically you would add this to the test suite as a first step.
