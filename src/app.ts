@@ -2,7 +2,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import jwt from 'express-jwt';
 import cookieParser from 'cookie-parser';
-import express, {Request, json} from 'express';
+import express, {Request, json, Response} from 'express';
 import {Users} from './modules/users';
 import {log} from './lib/log';
 
@@ -30,8 +30,21 @@ app.use(cors({origin: (_, callback) => callback(null, true), credentials: true})
 
 // Enable JWT decoding. We decode globally but don't require the credentials. This means you can create anonymous endpoints that can still
 // "know" if it's a real user calling. Note that you do not need to specify audience and issuer, but there are good reasons to do that if
-// you can.
-app.use(jwt({secret: process.env.JWT_SECRET || 'BOGUS', audience: 'http://myapp/protected', issuer: 'https://myapp', algorithms: ['HS256']}));
+// you can. See https://github.com/auth0/express-jwt/issues/194 for the reason we need a custom error handler here.
+app.use(
+  jwt({
+    secret: process.env.JWT_SECRET || 'BOGUS',
+    // To increase security further, you can validate the Audience and Issuer fields
+    // audience: process.env.JWT_AUD || 'BOGUS',
+    // issuer: process.env.JWT_ISS || 'BOGUS',
+    algorithms: ['HS256'],
+    credentialsRequired: false,
+  }),
+  function (err: any, _: Request, _2: Response, next: Function) {
+    if (err.code === 'invalid_token') return next();
+    return next(err);
+  },
+);
 
 // Activate our primary modules
 app.use('/', [

@@ -22,3 +22,10 @@ export const connectDb = async () => {
 
   return db;
 };
+
+export const closeDb = async () => {
+  if (db !== null) {
+    db.close().catch((e) => console.warn('Unable to close database connection', e));
+    db = null;
+  }
+};

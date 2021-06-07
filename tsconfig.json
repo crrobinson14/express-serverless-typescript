@@ -11,7 +11,7 @@
     "strictNullChecks": true,
     "noUncheckedIndexedAccess": true,
 
-    "typeRoots": ["./src/types"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
 
     "noImplicitAny": true,
     "noImplicitReturns": true,

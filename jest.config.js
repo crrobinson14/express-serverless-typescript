@@ -1,11 +1,12 @@
 module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverage: true,
+  rootDir: './src',
+  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
   coverageDirectory: '<rootDir>/../reports/coverage',
   coveragePathIgnorePatterns: ['config'],
   coverageReporters: ['json', 'json-summary', 'text-summary', 'lcov', 'text', 'html'],
-  rootDir: './src',
-  setupFilesAfterEnv: ['<rootDir>/test/setup.ts'],
   testTimeout: 30000,
   reporters: [
     'default',
