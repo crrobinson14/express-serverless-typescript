@@ -10,7 +10,7 @@ export const app = express();
 
 // Use morgan for logging, but not if we're in the test suite. We also ignore CORS-related OPTIONS requests and ELB healthcheck endpoints
 if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined', {skip: (req: Request) => req.url === '/health_check' || req.method === 'OPTIONS'}));
+  app.use(morgan('combined', {skip: (req: Request) => req.url === '/health' || req.method === 'OPTIONS'}));
 }
 
 // Add a simple health-check endpoint

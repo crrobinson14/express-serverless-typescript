@@ -18,13 +18,13 @@ export class Users {
     // Get a list of all users in the system. This is just meant to illustrate typical CRUD operations but if we pretend we're a big social
     // app here we'd never allow something like this, so here we're just going to return the 10 most-recently-created. This endpoint is
     // mostly demonstrating general route handling and a guard to only allow this to be called by authenticated users.
-    this.router.get('/', sessionValid, async (_, res: Response) => {
+    this.router.get('/users', sessionValid, async (_, res: Response) => {
       const newUsers = await User.findAll({attributes: User.PUBLIC_FIELDS, order: [['createdAt', 'DESC']], limit: 10, plain: true});
       res.json({users: newUsers});
     });
 
     // Create a user
-    this.router.post('/', check(['email']).isEmail().custom(emailIsUnique), check(['password']).isStrongPassword(), async (req: Request, res: Response) => {
+    this.router.post('/users', check(['email']).isEmail().custom(emailIsUnique), check(['password']).isStrongPassword(), async (req: Request, res: Response) => {
       const {email, password} = matchedData(req);
       const passwordHash = User.hashPassword(password);
 
@@ -36,7 +36,7 @@ export class Users {
     });
 
     // Get a public user profile by their ID
-    this.router.get('/:userId', sessionValid, check(['userId']).isUUID(), async (req: Request, res: Response) => {
+    this.router.get('/users/:userId', sessionValid, check(['userId']).isUUID(), async (req: Request, res: Response) => {
       const {userId} = matchedData(req);
       const foundUser = await User.findByPk(userId, {attributes: User.PUBLIC_FIELDS});
       if (!foundUser) {
@@ -49,7 +49,7 @@ export class Users {
 
     // Update a user record. We require a userId here to be explicit/support future expansion, but for now we only allow users to update
     // their own records. We don't need the sessionValid guard here because userIdIsCaller implicitly checks the same thing.
-    this.router.put('/:userId', check(['userId']).custom(userIdIsCaller), checkSchema(User.MUTABLE_FIELDS), async (req: Request, res: Response) => {
+    this.router.put('/users/:userId', check(['userId']).custom(userIdIsCaller), checkSchema(User.MUTABLE_FIELDS), async (req: Request, res: Response) => {
       const {userId, password} = matchedData(req);
 
       const user = await User.findByPk(userId);
