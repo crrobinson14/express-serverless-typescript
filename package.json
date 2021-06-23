@@ -25,6 +25,7 @@
     "knex": "^0.95.6",
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
+    "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",

@@ -1,15 +1,17 @@
 import {Sequelize, SequelizeOptions} from 'sequelize-typescript';
-import * as Models from '../models';
+import {User} from '../models';
+import {log} from './log';
 
 const options = {
   dialect: 'mysql',
-  models: Object.values(Models),
+  dialectModule: require('mysql2'),
+  models: [User],
 } as SequelizeOptions;
 
 let db = null as Sequelize | null;
 
 export const connectDb = async () => {
-  if (db === null) {
+  if (db !== null) {
     return db;
   }
 
@@ -18,7 +20,10 @@ export const connectDb = async () => {
   }
 
   db = new Sequelize(process.env.DB_URI, options);
-  await db.authenticate();
+  await db
+    .authenticate()
+    .then(() => log.info('Connected to database'))
+    .catch((e) => log.error('Unable to connect to database', e));
 
   return db;
 };
@@ -28,4 +33,9 @@ export const closeDb = async () => {
     db.close().catch((e) => console.warn('Unable to close database connection', e));
     db = null;
   }
+};
+
+export const connectMiddleware = async (_: any, _2: any, next: Function) => {
+  await connectDb();
+  next();
 };

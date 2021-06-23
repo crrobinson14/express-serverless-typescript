@@ -18,22 +18,30 @@ export class Users {
     // Get a list of all users in the system. This is just meant to illustrate typical CRUD operations but if we pretend we're a big social
     // app here we'd never allow something like this, so here we're just going to return the 10 most-recently-created. This endpoint is
     // mostly demonstrating general route handling and a guard to only allow this to be called by authenticated users.
-    this.router.get('/users', sessionValid, async (_, res: Response) => {
+    this.router.get('/users', async (_, res: Response) => {
+      // this.router.get('/users', sessionValid, async (_, res: Response) => {
+      console.log('finding new users');
       const newUsers = await User.findAll({attributes: User.PUBLIC_FIELDS, order: [['createdAt', 'DESC']], limit: 10, plain: true});
+      console.log('newUsers', newUsers);
       res.json({users: newUsers});
     });
 
     // Create a user
-    this.router.post('/users', check(['email']).isEmail().custom(emailIsUnique), check(['password']).isStrongPassword(), async (req: Request, res: Response) => {
-      const {email, password} = matchedData(req);
-      const passwordHash = User.hashPassword(password);
+    this.router.post(
+      '/users',
+      check(['email']).isEmail().custom(emailIsUnique),
+      check(['password']).isStrongPassword(),
+      async (req: Request, res: Response) => {
+        const {email, password} = matchedData(req);
+        const passwordHash = User.hashPassword(password);
 
-      const newUser = new User({email, passwordHash});
-      await newUser.save();
-      log.info('Created user', newUser.toJSON());
+        const newUser = new User({email, passwordHash});
+        await newUser.save();
+        log.info('Created user', newUser.toJSON());
 
-      res.json({user: newUser.toJSON()});
-    });
+        res.json({user: newUser.toJSON()});
+      },
+    );
 
     // Get a public user profile by their ID
     this.router.get('/users/:userId', sessionValid, check(['userId']).isUUID(), async (req: Request, res: Response) => {

@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import jwt from 'express-jwt';
 import cookieParser from 'cookie-parser';
 import express, {Request, json, Response} from 'express';
+import {connectMiddleware} from './lib/orm';
 import {Users} from './modules/users';
 import {log} from './lib/log';
 
@@ -47,7 +48,7 @@ app.use(
 );
 
 // Activate our primary modules
-app.use('/', [
+app.use('/', connectMiddleware, [
   new Users().router, //
   // new Companies().router,
   // Etc. The empty comment forces Prettier to put these on separate lines even if you only have a few modules.
