@@ -2,7 +2,7 @@
 
 declare namespace Express {
   export interface Request {
-    session?: {
+    user?: {
       sub: string;
     };
 
